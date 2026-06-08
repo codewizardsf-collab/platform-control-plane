@@ -1,59 +1,48 @@
-# Platform Control Plane
+﻿# Platform Control Plane
 
-An ASP.NET Core internal platform API that demonstrates senior .NET engineering patterns from the resume set: gateway route ownership, feature-flag rollouts, rollback auditability, cloud spend attribution, SLI snapshots, and queue dead-letter visibility.
+An ASP.NET Core internal platform API for gateway route governance, feature-flag rollouts, rollback auditing, cloud cost attribution, queue health, and SLI snapshots.
 
-The project intentionally uses only framework-provided packages so it can build offline and be reviewed quickly.
+## Stack
 
-## Enterprise Behaviors Demonstrated
+.NET 8, ASP.NET Core, internal platform services
 
-- Gateway route registry with owner teams, required scopes, enabled state, upstream URLs, and rate limits.
-- Longest-prefix route resolution for API gateway style routing.
-- Gradual feature flag rollout using stable SHA-256 subject bucketing.
-- Rollback endpoint that disables a flag, drops rollout to zero, and writes an audit event.
-- Cost attribution summary that separates tagged and untagged infrastructure spend.
-- Dead-letter queue health reports with degraded and critical thresholds.
-- Correlation middleware that propagates `traceparent` or `x-correlation-id`.
-- No-dependency test runner covering the most important domain behaviors.
+## Problem
 
-## Run
+Platform teams need reliable self-service controls for routing, rollout safety, operational visibility, and cost ownership.
+
+## Architecture
+
+- PlatformControlPlane.Api exposes minimal API endpoints.
+- PlatformControlPlane.Core contains domain services for flags, routes, cost, queues, and audit.
+- A no-dependency test runner verifies critical domain behavior.
+
+## Implemented Production Readiness
+
+- CI builds API and test projects.
+- Dockerfile and Compose file are included.
+- Correlation IDs are propagated through middleware.
+- Feature rollback creates audit events.
+
+## Run And Test
 
 ```powershell
 dotnet build src\PlatformControlPlane.Api\PlatformControlPlane.Api.csproj
-dotnet run --project src\PlatformControlPlane.Api
-```
-
-If the SDK assigns a port automatically, use the URL printed by `dotnet run`.
-
-## Test
-
-```powershell
 dotnet run --project tests\PlatformControlPlane.Tests
 ```
 
-## Useful API Calls
+## Quality Gates
 
-```powershell
-Invoke-RestMethod http://localhost:5000/feature-flags
-Invoke-RestMethod http://localhost:5000/costs/attribution
-Invoke-RestMethod http://localhost:5000/sli/snapshots
-Invoke-RestMethod http://localhost:5000/audit
-```
+- Project-specific GitHub Actions workflow included under .github/workflows/ci.yml.
+- Generated build outputs and dependency folders are excluded through .gitignore.
+- Tests and validation commands are intentionally small enough to run during code review.
 
-## Resume Mapping
+## Production Extension Points
 
-This project supports bullets around:
+- Persist configuration in SQL Server or PostgreSQL.
+- Add policy-based authorization.
+- Export OpenTelemetry traces to Application Insights or Jaeger.
 
-- ASP.NET Core internal platform APIs.
-- Feature flag systems with gradual rollout and rollback hooks.
-- API gateway ownership and rate limiting.
-- Azure-style cost attribution APIs.
-- Distributed tracing and incident isolation workflows.
-- Queue health and dead-letter monitoring.
+## Repository Hygiene
 
-## Production Next Steps
+This repository contains original portfolio code only. It does not include employer source code, private resumes, generated binaries, local credentials, or large media files.
 
-- Persist configuration in PostgreSQL or SQL Server.
-- Add OpenTelemetry packages and export traces to Application Insights or Jaeger.
-- Add authentication and policy-based authorization.
-- Add real rate-limiting middleware in front of upstream proxy handlers.
-- Replace in-memory queue health with Azure Service Bus or Kafka consumer telemetry.
