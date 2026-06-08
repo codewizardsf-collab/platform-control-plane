@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PlatformControlPlane.Api/PlatformControlPlane.Api.csproj" />
+    <Project Path="src/PlatformControlPlane.Core/PlatformControlPlane.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PlatformControlPlane.Tests/PlatformControlPlane.Tests.csproj" />
+  </Folder>
+</Solution>
